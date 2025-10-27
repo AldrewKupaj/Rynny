@@ -131,13 +131,13 @@
             </div>
             
             <div class="input-grupa">
-                <label for="wysokosc-budynku">Wysokość budynku do rynny (w metrach)</label>
-                <input type="number" id="wysokosc-budynku" placeholder="np. 4.5">
-            </div>
-            
-            <div class="input-grupa">
                 <label for="ilosc-lejow">Ilość lejów spustowych (na 1 połać)</label>
                 <input type="number" id="ilosc-lejow" placeholder="np. 1" value="1">
+            </div>
+
+            <div class="input-grupa">
+                <label for="ilosc-rur-na-lej">Ilość rur spustowych (szt. na 1 lej)</label>
+                <input type="number" id="ilosc-rur-na-lej" placeholder="np. 2" value="2">
             </div>
 
             <div class="opcjonalne">
@@ -165,99 +165,4 @@
                 <p><strong>Ilość obejm do rury:</strong> <span id="wynik-obejmy" class="wynik-wartosc">- szt.</span></p>
                 <p><strong>Ilość trzpieni do obejm:</strong> <span id="wynik-trzpienie" class="wynik-wartosc">- szt.</span></p>
                 <p><strong>Ilość kolan dwukielichowych:</strong> <span id="wynik-kolana-dwu" class="wynik-wartosc">- szt.</span></p>
-                <p><strong>Ilość kolan spustowych:</strong> <span id="wynik-kolana-spust" class="wynik-wartosc">- szt.</span></p>
-            </div>
-        </div>
-
-    </div> <script>
-        function obliczRynny() {
-            // 1. Pobierz wartości
-            const dlugoscPolaci = parseFloat(document.getElementById('dlugosc-polaci').value);
-            const iloscPolaci = parseInt(document.getElementById('ilosc-polaci').value);
-            // ZMIANA: Pobieramy długość rynny, a nie ilość
-            const dlugoscRynny = parseFloat(document.getElementById('dlugosc-rynny').value); 
-            const wysokosc = parseFloat(document.getElementById('wysokosc-budynku').value);
-            const iloscLejowNaPolac = parseInt(document.getElementById('ilosc-lejow').value);
-            
-            const rozstawHakow = parseFloat(document.getElementById('rozstaw-hakow').value);
-            const dlugoscRury = parseFloat(document.getElementById('dlugosc-rury').value);
-
-            // 2. Walidacja
-            if (isNaN(dlugoscPolaci) || isNaN(iloscPolaci) || isNaN(wysokosc) || isNaN(dlugoscRynny) || isNaN(iloscLejowNaPolac)) {
-                alert("Proszę wypełnić wszystkie pola poprawnymi wartościami (większymi od 0).");
-                return;
-            }
-            if (dlugoscPolaci <= 0 || iloscPolaci <= 0 || wysokosc <= 0 || dlugoscRynny <= 0 || iloscLejowNaPolac < 0) {
-                alert("Proszę podać wartości dodatnie. Długości muszą być większe od 0.");
-                return;
-            }
-            if (isNaN(rozstawHakow) || isNaN(dlugoscRury) || rozstawHakow <= 0 || dlugoscRury <= 0) {
-                alert("Proszę podać poprawne wartości (większe od 0) dla rozstawu haków i długości rury.");
-                return;
-            }
-
-            // 3. Obliczenia
-            
-            // A. Zmienne pomocnicze
-            const lacznaIloscLejow = iloscPolaci * iloscLejowNaPolac;
-            const iloscRurNaSpust = Math.ceil(wysokosc / dlugoscRury);
-            const totalRurySpustowe = lacznaIloscLejow * iloscRurNaSpust;
-            
-            // NOWE OBLICZENIA Rynien i Złączek
-            const iloscRynienNaPolac = Math.ceil(dlugoscPolaci / dlugoscRynny);
-            const totalRynny = iloscRynienNaPolac * iloscPolaci;
-
-            // B. Obliczenia wyjściowe
-
-            // Haki (Długość / rozstaw + 1, na każdą połać)
-            const haki = (Math.ceil(dlugoscPolaci / rozstawHakow) + 1) * iloscPolaci;
-
-            // Złączki (ZMIANA FORMUŁY: bazuje na obliczonej ilości rynien)
-            const zlaczki = (iloscRynienNaPolac - 1) * iloscPolaci;
-            
-            // Leje (Łączna ilość)
-            const leje = lacznaIloscLejow;
-
-            // Denka (1L i 1P na każdą połać)
-            const denkaL = iloscPolaci;
-            const denkaP = iloscPolaci;
-
-            // Rury
-            const rury = totalRurySpustowe;
-
-            // Obejmy (Rury * 2)
-            const obejmy = totalRurySpustowe * 2;
-
-            // Trzpienie (Ilość obejm)
-            const trzpienie = obejmy;
-
-            // Kolana dwukielichowe (Rury * 2)
-            const kolanaDwukielichowe = totalRurySpustowe * 2;
-
-            // Kolana spustowe (Rury * 1)
-            const kolanaSpustowe = totalRurySpustowe * 1;
-
-
-            // 4. Wyświetl wyniki
-            
-            // NOWY WYNIK (Rynny)
-            document.getElementById('wynik-rynny-szt').textContent = totalRynny + ' szt. (o dł. ' + dlugoscRynny + ' m)';
-            
-            document.getElementById('wynik-haki').textContent = haki + ' szt.';
-            document.getElementById('wynik-zlaczki').textContent = zlaczki + ' szt.';
-            document.getElementById('wynik-leje').textContent = leje + ' szt.';
-            
-            // ZAKTUALIZOWANY WYNIK (Rury Spustowe)
-            document.getElementById('wynik-rury').textContent = rury + ' szt. (o dł. ' + dlugoscRury + ' m)';
-            
-            document.getElementById('wynik-obejmy').textContent = obejmy + ' szt.';
-            document.getElementById('wynik-denka-l').textContent = denkaL + ' szt.';
-            document.getElementById('wynik-denka-p').textContent = denkaP + ' szt.';
-            document.getElementById('wynik-kolana-dwu').textContent = kolanaDwukielichowe + ' szt.';
-            document.getElementById('wynik-kolana-spust').textContent = kolanaSpustowe + ' szt.';
-            document.getElementById('wynik-trzpienie').textContent = trzpienie + ' szt.';
-        }
-    </script>
-
-</body>
-</html>
+                <p><strong>Ilość kolan spustowych:</strong> <span
