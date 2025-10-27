@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Zapotrzebowania Rynien</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+        }
+        .kalkulator {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            padding: 25px 30px;
+            width: 500px;
+            box-sizing: border-box;
+        }
+        .kalkulator h2 {
+            color: #005a9c;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+            text-align: center;
+        }
+        .input-grupa {
+            margin-bottom: 15px;
+        }
+        .input-grupa label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.9em;
+        }
+        .input-grupa input, .input-grupa select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        .opcjonalne {
+            display: flex;
+            gap: 15px;
+        }
+        .opcjonalne .input-grupa {
+            flex: 1;
+        }
+        .przycisk {
+            width: 100%;
+            background-color: #28a745; /* Zielony */
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+        .przycisk:hover {
+            background-color: #218838;
+        }
+        .wyniki {
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+        .wyniki h3 {
+            margin-top: 0;
+            text-align: center;
+            color: #333;
+        }
+        .wyniki p {
+            margin: 10px 0;
+            font-size: 1.1em;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        .wyniki p:last-child {
+            border-bottom: none;
+        }
+        .wyniki strong {
+            color: #333;
+        }
+        .wynik-wartosc {
+            font-weight: 700;
+            color: #005a9c; /* Niebieski */
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="kalkulator">
+            <h2>Kalkulator Zapotrzebowania Rynien</h2>
+            
+            <div class="input-grupa">
+                <label for="dlugosc-polaci">Długość jednej połaci (w metrach)</label>
+                <input type="number" id="dlugosc-polaci" placeholder="np. 12.5">
+            </div>
+            
+            <div class="input-grupa">
+                <label for="ilosc-polaci">Ilość takich połaci</label>
+                <input type="number" id="ilosc-polaci" placeholder="np. 2" value="1">
+            </div>
+
+            <div class="input-grupa">
+                <label for="ilosc-rynien">Ilość rynien (szt. na 1 połać)</label>
+                <input type="number" id="ilosc-rynien" placeholder="np. 4">
+            </div>
+            
+            <div class="input-grupa">
+                <label for="wysokosc-budynku">Wysokość budynku do rynny (w metrach)</label>
+                <input type="number" id="wysokosc-budynku" placeholder="np. 4.5">
+            </div>
+            
+            <div class="input-grupa">
+                <label for="ilosc-lejow">Ilość lejów spustowych (na 1 połać)</label>
+                <input type="number" id="ilosc-lejow" placeholder="np. 1" value="1">
+            </div>
+
+
+            <div class="opcjonalne">
+                <div class="input-grupa">
+                    <label for="rozstaw-hakow">Rozstaw haków (w m)</label>
+                    <input type="number" id="rozstaw-hakow" value="0.5">
+                </div>
+                <div class="input-grupa">
+                    <label for="dlugosc-rury">Długość 1 rury spust. (w m)</label>
+                    <input type="number" id="dlugosc-rury" value="3">
+                </div>
+            </div>
+            
+            <button class="przycisk" onclick="obliczRynny()">Oblicz zapotrzebowanie</button>
+            
+            <div class="wyniki" id="wyniki-rynny">
+                <h3>Lista potrzebnych elementów:</h3>
+                <p><strong>Ilość haków doczołowych:</strong> <span id="wynik-haki" class="wynik-wartosc">- szt.</span></p>
+                <p><strong>Ilość złączek rynnowych:</strong> <span id="wynik-zlaczki" class="wynik-wartosc">- szt.</span></p>
+                <p><strong>Ilość lejów spustowych (łącznie):</strong> <span id="wynik-leje" class="wynik-wartosc">- szt.</span></p>
+                <p><strong>Ilość denka Lewe (L):</strong> <span id="wynik-denka-l" class="wynik-wartosc">- szt.</span></p>
+                <p><strong>Ilość denka Prawe (P):</strong> <span id="wynik-denka-p" class="wynik-wartosc">- szt.</span></p>
+                <p><strong>Ilość rur spustowych:</strong> <span id="wynik-rury" class="wynik-wartosc">- szt.</span></p>
+                <p><strong>Ilość obejm do rury:</strong> <span id="wynik-obejmy" class="wynik-wartosc">- szt.</span></p>
+                <p><strong>Ilość trzpieni do obejm:</strong> <span id="wynik-trzpienie" class="wynik-wartosc">- szt.</span></p>
+                <p><strong>Ilość kolan dwukielichowych:</strong> <span id="wynik-kolana-dwu" class="wynik-wartosc">- szt.</span></p>
+                <p><strong>Ilość kolan spustowych:</strong> <span id="wynik-kolana-spust" class="wynik-wartosc">- szt.</span></p>
+            </div>
+        </div>
+
+    </div> <script>
+        function obliczRynny() {
+            // 1. Pobierz wartości
+            const dlugoscPolaci = parseFloat(document.getElementById('dlugosc-polaci').value);
+            const iloscPolaci = parseInt(document.getElementById('ilosc-polaci').value);
+            const iloscRynien = parseInt(document.getElementById('ilosc-rynien').value); // NOWE POLE
+            const wysokosc = parseFloat(document.getElementById('wysokosc-budynku').value);
+            const iloscLejowNaPolac = parseInt(document.getElementById('ilosc-lejow').value);
+            
+            // Dane opcjonalne z domyślnymi wartościami
+            const rozstawHakow = parseFloat(document.getElementById('rozstaw-hakow').value);
+            const dlugoscRury = parseFloat(document.getElementById('dlugosc-rury').value);
+
+            // 2. Walidacja
+            if (isNaN(dlugoscPolaci) || isNaN(iloscPolaci) || isNaN(wysokosc) || isNaN(iloscRynien) || isNaN(iloscLejowNaPolac)) {
+                alert("Proszę wypełnić wszystkie pola poprawnymi wartościami (większymi od 0).");
+                return;
+            }
+            if (dlugoscPolaci <= 0 || iloscPolaci <= 0 || wysokosc <= 0 || iloscRynien <= 0 || iloscLejowNaPolac < 0) {
+                alert("Proszę podać wartości dodatnie. Ilość lejów może wynosić 0.");
+                return;
+            }
+            if (isNaN(rozstawHakow) || isNaN(dlugoscRury) || rozstawHakow <= 0 || dlugoscRury <= 0) {
+                alert("Proszę podać poprawne wartości (większe od 0) dla rozstawu haków i długości rury.");
+                return;
+            }
+
+            // 3. Obliczenia
+            
+            // A. Zmienne pomocnicze
+            const lacznaIloscLejow = iloscPolaci * iloscLejowNaPolac;
+            const iloscRurNaSpust = Math.ceil(wysokosc / dlugoscRury);
+            const totalRurySpustowe = lacznaIloscLejow * iloscRurNaSpust;
+
+            // B. Obliczenia wyjściowe (zgodnie z NOWYMI formułami)
+
+            // Haki (ZMIANA FORMUŁY: Długość / rozstaw + 1, na każdą połać)
+            const haki = (Math.ceil(dlugoscPolaci / rozstawHakow) + 1) * iloscPolaci;
+
+            // Złączki (ZMIANA FORMUŁY: ilosc rynien - 1, na każdą połać)
+            const zlaczki = (iloscRynien - 1) * iloscPolaci;
+            
+            // Leje (Łączna ilość)
+            const leje = lacznaIloscLejow;
+
+            // Denka (ZMIANA FORMUŁY: 1L i 1P na każdą połać)
+            const denkaL = iloscPolaci;
+            const denkaP = iloscPolaci;
+
+            // Rury
+            const rury = totalRurySpustowe;
+
+            // Obejmy (Twoja formuła: Rury * 2)
+            const obejmy = totalRurySpustowe * 2;
+
+            // Trzpienie (Twoja formuła: Ilość obejm)
+            const trzpienie = obejmy;
+
+            // Kolana dwukielichowe (Twoja formuła: Rury * 2)
+            // ZMIANA: Logiczniej jest bazować na ilości rur, a nie lejów.
+            const kolanaDwukielichowe = totalRurySpustowe * 2;
+
+            // Kolana spustowe (Twoja formuła: Rury * 1)
+            // ZMIANA: Logiczniej jest bazować na ilości rur, a nie lejów.
+            const kolanaSpustowe = totalRurySpustowe * 1;
+
+
+            // 4. Wyświetl wyniki
+            document.getElementById('wynik-haki').textContent = haki + ' szt.';
+            document.getElementById('wynik-zlaczki').textContent = zlaczki + ' szt.';
+            document.getElementById('wynik-leje').textContent = leje + ' szt.';
+            document.getElementById('wynik-rury').textContent = rury + ' szt.';
+            document.getElementById('wynik-obejmy').textContent = obejmy + ' szt.';
+            document.getElementById('wynik-denka-l').textContent = denkaL + ' szt.';
+            document.getElementById('wynik-denka-p').textContent = denkaP + ' szt.';
+            document.getElementById('wynik-kolana-dwu').textContent = kolanaDwukielichowe + ' szt.';
+            document.getElementById('wynik-kolana-spust').textContent = kolanaSpustowe + ' szt.';
+            document.getElementById('wynik-trzpienie').textContent = trzpienie + ' szt.';
+        }
+    </script>
+
+</body>
+</html>
